@@ -1,26 +1,27 @@
-🟦 frame_topo — Cabeçalho
+🟦 frame_topo — Cabeçalho ✅
 
-Elementos:
 Título do app (ex.: “Tesseract Finance”) ✅
-Opcional: Data/hora atual
+Opcional: Data/hora atual ✅
+
 
 ⬛ frame_menu — Menu lateral (interações do usuário)
 
-Elementos:
 Botão “Adicionar Receita” ✅
 Campo de entrada de valor da receita ✅
-Campo de descrição (opcional)
+Campo de descrição 
 Botão “Salvar Receita" 
+
 Botão “Adicionar Despesa” ✅
 Campo de entrada de valor da despesa ✅
 Campo de descrição
 Botão “Salvar Despesa"
+
 Botão “Ver Saldo”
 Botão “Limpar Histórico” (opcional)
 
+
 ⬛ frame_app — Conteúdo principal
 
-Elementos:
 Saldo Atual (em destaque)
 Histórico de Transações (lista rolável)
 Gráfico simples (opcional, futuro)
@@ -35,6 +36,7 @@ Histórico:
 - - R$ 12,00 — Lanche
 - - R$ 18,00 — Material escolar
 ----------------------------------------
+
 
 🟦 frame_log — Rodapé / Log
 

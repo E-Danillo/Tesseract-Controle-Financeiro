@@ -46,9 +46,11 @@ frame_menu.grid(row=1, column=0, sticky="nsew")
 
 # FRAME DO CORPO DO APP
 frame_app = ctk.CTkFrame(janela, fg_color=Preto, border_color=Azul, border_width=3)
-label_texto = ctk.CTkLabel(frame_app, text="Talvez um gráfico e estatísticas apareçam aqui...")
-label_texto.pack(padx=20, pady=20)
 frame_app.grid(row=1, column=1, sticky="nsew")
+
+numero_salvo = ctk.StringVar()
+label_contas = ctk.CTkLabel(frame_app, textvariable=numero_salvo)
+label_contas.pack(padx=20, pady=20)
 
 # FRAME DO RODAPÉ 
 frame_log = ctk.CTkFrame(janela, height=80, fg_color=Azul)
@@ -57,35 +59,51 @@ frame_log.grid(row=2, column=0, columnspan=2, sticky="nsew")
 # ------------------------
 # FUNÇÕES
 # ------------------------
-def adicionarReceita():
-    entrada_receitas.grid(row=1, column=0, padx=20, pady=10)
-
-def adicionarDespesa():
-    entrada_despesas.grid(row=3, column=0, padx=20, pady=10)
-
 def horario():
     agora = datetime.now().strftime("%Y-%m-%d / %H:%M:%S")
     label_horario.configure(text=agora)
     janela.after(1000, horario)
 
+def adicionar_receita():
+    entrada_receita.grid(row=1, column=0, padx=20, pady=10)
+
+def salvar_numero_receitas():
+    valor = entrada_receita.get()
+    numero_salvo.set(valor)
+    entrada_receita.delete(0, ctk.END)
+
+def salvar_numero_despesas():
+    valor = entrada_despesa.get()
+    numero_salvo.set(valor)
+    entrada_despesa.delete(0, ctk.END)
+
+def adicionar_despesa():
+    entrada_despesa.grid(row=4, column=0, padx=20, pady=10)
+
 # ------------------------
 # BOTOES DO MENU LATERAL
 # ------------------------
-botao_de_receitas = ctk.CTkButton(frame_menu, 
+botao_receita = ctk.CTkButton(frame_menu, 
     text="Receitas",
-    command=adicionarReceita, 
+    command=adicionar_receita, 
     width=200, height=50, corner_radius=10, fg_color=Verde)
-botao_de_receitas.grid(row=0, column=0, padx=20, pady=20)
+botao_receita.grid(row=0, column=0, padx=20, pady=20)
 
-botao_de_despesas = ctk.CTkButton(frame_menu, 
+botao_salvar_receita = ctk.CTkButton(frame_menu, text="Salvar Receita", command=salvar_numero_receitas, width=100, height=25, corner_radius=10, fg_color=Verde)
+botao_salvar_receita.grid(row=2, column=0, padx=20, pady=20)
+
+botao_despesa = ctk.CTkButton(frame_menu, 
     text="Despesas",
-    command=adicionarDespesa, 
+    command=adicionar_despesa, 
     width=200, height=50, corner_radius=10, fg_color=Verde)
-botao_de_despesas.grid(row=2, column=0, padx=20, pady=20)
+botao_despesa.grid(row=3, column=0, padx=20, pady=20)
 
-# Entradas dos botões de receitas e despesas
-entrada_receitas = ctk.CTkEntry(frame_menu, placeholder_text="Digite sua receita", width=200)
-entrada_despesas = ctk.CTkEntry(frame_menu, placeholder_text="Digite sua despesa", width=200)
+botao_salvar_despesa = ctk.CTkButton(frame_menu, text="Salvar Despesa", command=salvar_numero_despesas, width=100, height=25, corner_radius=10, fg_color=Verde)
+botao_salvar_despesa.grid(row=5, column=0, padx=20, pady=20)
+
+# Entradas dos botões de receitas/despesas e demais relacionados
+entrada_receita = ctk.CTkEntry(frame_menu, placeholder_text="Digite sua receita", width=200)
+entrada_despesa = ctk.CTkEntry(frame_menu, placeholder_text="Digite sua despesa", width=200)
 
 # Log no rodapé
 log_label = ctk.CTkLabel(frame_log, text="Talvez o histórico apareça aqui...")
