@@ -57,6 +57,11 @@ Utiliza **CustomTkinter** para uma aparência mais profissional.
 - datetime  
 
 ---
+## 🛠️ Colaboração
+
+- Se você quiser colaborar com o projeto, confira o arquivo CONTRIBUICAO.md para ver os itens que ainda faltam e contribua fazendo as melhorias ou implementações listadas. Toda ajuda é bem-vinda!
+
+---
 
 ## 📦 Instalação
 
