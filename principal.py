@@ -1,12 +1,19 @@
 import customtkinter as ctk
 from datetime import datetime
 from PIL import Image
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 # Cores
 Azul = "#27AAE1"
 Preto = "#282828"
 Branco = "#DEDEE0"
 Verde = "#257C0D"
+
+#Controle de Variáveis
+
+lista_receitas = []
+lista_despesas = []
 
 # Janela Principal 
 janela = ctk.CTk()
@@ -56,31 +63,6 @@ label_contas = ctk.CTkLabel(frame_app, textvariable=numero_salvo, font=("Arial",
 label_contas.grid(row=10, column=0, padx=20, pady=40)
 
 # ------------------------
-# ENTRADAS 
-# ------------------------
-entrada_receita = ctk.CTkEntry(frame_app, placeholder_text="Digite sua receita", width=300)
-entrada_despesa = ctk.CTkEntry(frame_app, placeholder_text="Digite sua despesa", width=300)
-
-# BOTÕES DE SALVAR
-botao_salvar_receita = ctk.CTkButton(
-    frame_app,
-    text="Salvar Receita",
-    command=lambda: salvar_numero_receitas(),
-    width=150,
-    height=40,
-    fg_color=Verde
-)
-
-botao_salvar_despesa = ctk.CTkButton(
-    frame_app,
-    text="Salvar Despesa",
-    command=lambda: salvar_numero_despesas(),
-    width=150,
-    height=40,
-    fg_color=Verde
-)
-
-# ------------------------
 # FUNÇÕES
 # ------------------------
 def horario():
@@ -105,13 +87,128 @@ def adicionar_despesa():
 
 def salvar_numero_receitas():
     valor = entrada_receita.get()
-    numero_salvo.set(f"Receita registrada: R$ {valor}")
-    entrada_receita.delete(0, ctk.END)
+    if valor.strip() != "":
+        valor = float(valor)
+        lista_receitas.append(valor)
+        historico.insert("end", f"[RECEITA] R$ {valor:.2f}\n")
+        historico.see("end")
+        entrada_receita.delete(0, ctk.END)
+        atualizar_status()
+
 
 def salvar_numero_despesas():
     valor = entrada_despesa.get()
-    numero_salvo.set(f"Despesa registrada: R$ {valor}")
-    entrada_despesa.delete(0, ctk.END)
+    if valor.strip() != "":
+        valor = float(valor)
+        lista_despesas.append(valor)
+        historico.insert("end", f"[DESPESA] R$ {valor:.2f}\n")
+        historico.see("end")
+        entrada_despesa.delete(0, ctk.END)
+        atualizar_status()
+
+def limpar_frame_app():
+    for widget in frame_app.grid_slaves():
+        if widget not in [label_contas, historico]:
+            widget.grid_forget()
+
+def atualizar_status():
+    total_r = sum(lista_receitas)
+    total_d = sum(lista_despesas)
+    saldo = total_r - total_d
+    
+    if saldo > 0:
+        status = f"Lucro de R$ {saldo:.2f}"
+    elif saldo < 0:
+        status = f"Prejuízo de R$ {abs(saldo):.2f}"
+    else:
+        status = "Equilíbrio financeiro"
+    
+    numero_salvo.set(
+        f"Total Receitas: R$ {total_r:.2f} | Total Despesas: R$ {total_d:.2f}\n{status}"
+    )
+
+def mostrar_grafico():
+    limpar_frame_app()
+
+    fig, ax = plt.subplots(figsize=(5, 4))
+    categorias = ["Receitas", "Despesas"]
+    valores = [sum(lista_receitas), sum(lista_despesas)]
+
+    ax.bar(categorias, valores)
+    ax.set_title("Gráfico Financeiro")
+    ax.set_ylabel("Valores (R$)")
+
+    canvas = FigureCanvasTkAgg(fig, master=frame_app)
+    canvas.draw()
+    canvas.get_tk_widget().grid(row=0, column=0, padx=20, pady=20)
+
+
+
+# ------------------------
+# ENTRADAS 
+# ------------------------
+entrada_receita = ctk.CTkEntry(frame_app, placeholder_text="Digite sua receita", width=300)
+entrada_despesa = ctk.CTkEntry(frame_app, placeholder_text="Digite sua despesa", width=300)
+
+#BOTÃO MENU
+
+botao_receita = ctk.CTkButton(
+    frame_menu,
+    text = 'Receitas',
+    command=adicionar_receita,
+    width=150,
+    height=40,
+    fg_color=Verde 
+)
+botao_receita.grid(row=0, column=0, padx=20, pady=20)
+
+
+botao_despesa = ctk.CTkButton(
+    frame_menu,
+    text = 'Despesas',
+    command=adicionar_despesa,
+    width=150,
+    height=40,
+    fg_color=Verde 
+)
+botao_despesa.grid(row=1, column=0, padx=20, pady=20)
+
+
+botao_grafico = ctk.CTkButton(
+    frame_menu,
+    text = 'Gráfico',
+    command=mostrar_grafico,
+    width=150,
+    height=40,
+    fg_color=Branco
+)
+botao_grafico.grid(row=2, column=0, padx=20, pady=20)
+
+# BOTÕES DE SALVAR
+botao_salvar_receita = ctk.CTkButton(
+    frame_app,
+    text="Salvar Receita",
+    command=lambda: salvar_numero_receitas(),
+    width=150,
+    height=40,
+    fg_color=Verde
+)
+
+botao_salvar_despesa = ctk.CTkButton(
+    frame_app,
+    text="Salvar Despesa",
+    command=lambda: salvar_numero_despesas(),
+    width=150,
+    height=40,
+    fg_color=Verde
+)
+#
+#Histórico
+#
+
+# Caixa de histórico
+historico = ctk.CTkTextbox(frame_app, width=400, height=320)
+historico.grid(row=0, column=1, padx=20, pady=20)
 
 # ------------------------
 # MENU LATERAL
@@ -131,6 +228,14 @@ botao_despesa = ctk.CTkButton(
     width=200, height=50, corner_radius=10, fg_color=Verde
 )
 botao_despesa.grid(row=1, column=0, padx=20, pady=20)
+
+botao_grafico = ctk.CTkButton(
+    frame_menu, 
+    text="Gráfico",
+    command=mostrar_grafico, 
+    width=200, height=50, corner_radius=10, fg_color=Verde
+)
+botao_grafico.grid(row=2, column=0, padx=20, pady=20)
 
 # ------------------------
 # LOG
