@@ -52,9 +52,10 @@ Utiliza **CustomTkinter** para uma aparência mais profissional.
 ## 🛠️ Tecnologias Utilizadas
 
 - Python 3.x  
-- CustomTkinter  
-- Pillow (PIL)  
-- datetime  
+- CustomTkinter ( Interface )
+- Pillow (PIL) ( Imagem )
+- datetime ( Hora ao vivo )
+- matplotlib ( Gráfico )
 
 ---
 ## 🛠️ Colaboração
@@ -71,8 +72,7 @@ Utiliza **CustomTkinter** para uma aparência mais profissional.
 
 2.  **Instale as Dependências:**
      ```bash
-     pip install customtkinter pillow
-     pip install matplotlib
+     pip install customtkinter pillow matplotlib
 
 3. **Rode o projeto:**
    ```bash
