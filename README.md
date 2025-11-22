@@ -72,6 +72,7 @@ Utiliza **CustomTkinter** para uma aparência mais profissional.
 2.  **Instale as Dependências:**
      ```bash
      pip install customtkinter pillow
+     pip install matplotlib
 
 3. **Rode o projeto:**
    ```bash
