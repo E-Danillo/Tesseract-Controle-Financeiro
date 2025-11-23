@@ -1,4 +1,4 @@
-# 📘 Tesseract Finance
+# 🟦 Tesseract Finance 💵
 
 **Tesseract Finance** é uma aplicação desktop simples desenvolvida em **Python** utilizando a biblioteca **CustomTkinter**, projetada para gerenciar receitas e despesas de forma prática.  
 O projeto conta com uma interface moderna, tema dark, menu lateral interativo, exibição de horário em tempo real e espaço reservado para futuras funcionalidades como histórico financeiro e dashboards.
