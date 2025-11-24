@@ -10,8 +10,7 @@ Preto = "#282828"
 Branco = "#DEDEE0"
 Verde = "#257C0D"
 
-#Controle de Variáveis
-
+# Controle de Variáveis
 lista_receitas = []
 lista_despesas = []
 
@@ -42,20 +41,6 @@ frame_log = ctk.CTkFrame(janela, height=80, fg_color=Azul)
 frame_log.grid(row=2, column=0, columnspan=2, sticky="nsew")
 
 # ------------------------
-# ELEMENTOS DO TOPO
-# ------------------------
-label_horario = ctk.CTkLabel(frame_topo, text="", font=("Arial", 14))
-label_horario.place(relx=1.0, rely=0.5, anchor="e", x=-20)
-
-icon = Image.open("icon.jpeg")
-icon_ctk = ctk.CTkImage(icon, size=(40, 40))
-label_icon = ctk.CTkLabel(frame_topo, image=icon_ctk, text="")
-label_icon.place(relx=0.0, rely=0.5, anchor="w", x=20)
-
-titulo = ctk.CTkLabel(frame_topo, text="Tesseract", font=("Arial", 40, "bold"))
-titulo.pack(pady=20)
-
-# ------------------------
 # LABEL DE EXIBIÇÃO
 # ------------------------
 numero_salvo = ctk.StringVar()
@@ -65,7 +50,6 @@ label_contas.grid(row=10, column=0, padx=20, pady=40)
 # ------------------------
 # FUNÇÕES
 # ------------------------
-
 def horario():
     agora = datetime.now().strftime("⟣ %d/%m/%Y | %H:%M:%S ⟢")
     label_horario.configure(text=agora, font=("Segoe UI Symbol", 14, "bold")) 
@@ -139,6 +123,20 @@ def mostrar_grafico():
     canvas = FigureCanvasTkAgg(fig, master=frame_app)
     canvas.draw()
     canvas.get_tk_widget().grid(row=0, column=0, padx=20, pady=20)
+
+# ------------------------
+# ELEMENTOS DO TOPO
+# ------------------------
+label_horario = ctk.CTkLabel(frame_topo, text="", font=("Arial", 14))
+label_horario.place(relx=1.0, rely=0.5, anchor="e", x=-20)
+
+icon = Image.open("icon.jpeg")
+icon_ctk = ctk.CTkImage(icon, size=(40, 40))
+label_icon = ctk.CTkLabel(frame_topo, image=icon_ctk, text="")
+label_icon.place(relx=0.0, rely=0.5, anchor="w", x=20)
+
+titulo = ctk.CTkLabel(frame_topo, text="Tesseract", font=("Arial", 40, "bold"))
+titulo.pack(pady=20)
 
 # ------------------------
 # ELEMENTOS DO FRAME APP
