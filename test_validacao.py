@@ -1,5 +1,4 @@
-
-mport unittest
+import unittest
 from validacao import validar_valor, validar_descricao
 
 class TestValidacao(unittest.TestCase):
