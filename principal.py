@@ -51,7 +51,7 @@ label_contas.grid(row=10, column=0, padx=20, pady=40)
 # FUNÇÕES
 # ------------------------
 def horario():
-    agora = datetime.now().strftime("• %d/%m/%Y | %H:%M:%S •")
+    agora = datetime.now().strftime("📆 %d/%m/%Y | 🕒 %H:%M:%S")
     label_horario.configure(text=agora, font=("Segoe UI Symbol", 14, "bold")) 
     janela.after(1000, horario)
 
