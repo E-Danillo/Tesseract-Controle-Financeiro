@@ -3,6 +3,7 @@ from datetime import datetime
 from PIL import Image
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from collections import deque
 
 # Cores
 Azul = "#27AAE1"
@@ -18,7 +19,7 @@ lista_despesas = []
 janela = ctk.CTk()
 janela.title("Tesseract Finance")
 janela.geometry("1400x900")
-janela.resizable(False, False)
+janela.resizable(True, True)
 ctk.set_appearance_mode("dark")
 
 # Grid da Janela Principal
@@ -47,11 +48,106 @@ numero_salvo = ctk.StringVar()
 label_contas = ctk.CTkLabel(frame_app, textvariable=numero_salvo, font=("Arial", 20))
 label_contas.grid(row=10, column=0, padx=20, pady=40)
 
+# ------------------------------------------------------------
+# CLASSE DO LOG
+# ------------------------------------------------------------
+class CTkLogFrame(ctk.CTkFrame):
+    """
+    Rodapé de mensagens rápidas para sistemas em CustomTkinter.
+    """
+
+    def __init__(self, master, theme="dark", auto_clear=True, clear_after=3000):
+        self._set_appearance(theme)
+        super().__init__(master, height=32, fg_color=self.bg_color)
+
+        self.pack_propagate(False)
+
+        self.theme = theme
+        self.auto_clear = auto_clear
+        self.clear_after = clear_after
+
+        self.clear_job = None
+        self.queue = deque()
+        self.is_displaying = False
+
+        self.label = ctk.CTkLabel(
+            self,
+            text="",
+            anchor="w",
+            padx=10,
+            text_color=self.text_color,
+            font=ctk.CTkFont("Segoe UI", 13),
+        )
+        self.label.pack(fill="both", expand=True)
+
+        # Cores para mensagens
+        self.colors = {
+            "info":    "#5dade2",
+            "sucesso": "#00ff88",
+            "erro":    "#ff5555",
+            "aviso":   "#f1c40f",
+        }
+
+    # Tema claro/escuro
+    def _set_appearance(self, theme):
+        if theme == "light":
+            self.bg_color = "#f2f2f2"
+            self.text_color = "black"
+        else:
+            self.bg_color = "#1c1c1c"
+            self.text_color = "white"
+
+    # Sistema de fila
+    def _process_queue(self):
+        if self.is_displaying or not self.queue:
+            return
+
+        msg, color = self.queue.popleft()
+        self._display_message(msg, color)
+
+    def _display_message(self, msg, color):
+        self.is_displaying = True
+        self.label.configure(text=msg, text_color=color)
+
+        if self.clear_job:
+            self.after_cancel(self.clear_job)
+
+        if self.auto_clear:
+            self.clear_job = self.after(self.clear_after, self._finish_display)
+
+    def _finish_display(self):
+        self.label.configure(text="")
+        self.label.configure(text_color=self.text_color)
+        self.is_displaying = False
+        self._process_queue()
+
+    # API pública
+    def send(self, msg, color="white"):
+        self.queue.append((msg, color))
+        self._process_queue()
+
+    def info(self, msg):
+        self.send(msg, self.colors["info"])
+
+    def sucesso(self, msg):
+        self.send(msg, self.colors["sucesso"])
+
+    def erro(self, msg):
+        self.send(msg, self.colors["erro"])
+
+    def aviso(self, msg):
+        self.send(msg, self.colors["aviso"])
+
+
+# Instância do LOG
+log = CTkLogFrame(frame_log, theme="dark", auto_clear=True, clear_after=3000)
+log.pack(fill="both", expand=True, padx=10, pady=10)
+
 # ------------------------
 # FUNÇÕES
 # ------------------------
 def horario():
-    agora = datetime.now().strftime("📆 %d/%m/%Y | 🕒 %H:%M:%S")
+    agora = datetime.now().strftime(" %d/%m/%Y |  %H:%M:%S")
     label_horario.configure(text=agora, font=("Segoe UI Symbol", 14, "bold")) 
     janela.after(1000, horario)
 
@@ -59,31 +155,45 @@ def adicionar_receita():
     limpar_frame_app()
     entrada_receita.grid(row=0, column=0, padx=20, pady=20)
     botao_salvar_receita.grid(row=1, column=0, padx=20, pady=20)
+    log.info("Inserindo nova receita...")
 
 def adicionar_despesa():
     limpar_frame_app()
     entrada_despesa.grid(row=0, column=0, padx=20, pady=20)
     botao_salvar_despesa.grid(row=1, column=0, padx=20, pady=20)
+    log.info("Inserindo nova despesa...")
 
 def salvar_numero_receitas():
     valor = entrada_receita.get()
     if valor.strip() != "":
-        valor = float(valor)
-        lista_receitas.append(valor)
-        historico.insert("end", f"[RECEITA] R$ {valor:.2f}\n")
-        historico.see("end")
-        entrada_receita.delete(0, ctk.END)
-        atualizar_status()
+        try:
+            valor = float(valor)
+            lista_receitas.append(valor)
+            historico.insert("end", f"[RECEITA] R$ {valor:.2f}\n")
+            historico.see("end")
+            entrada_receita.delete(0, ctk.END)
+            atualizar_status()
+            log.sucesso(f"Receita adicionada: R$ {valor:.2f}")
+        except:
+            log.erro("Valor inválido para receita!")
+    else:
+        log.aviso("Digite um valor para a receita!")
 
 def salvar_numero_despesas():
     valor = entrada_despesa.get()
     if valor.strip() != "":
-        valor = float(valor)
-        lista_despesas.append(valor)
-        historico.insert("end", f"[DESPESA] R$ {valor:.2f}\n")
-        historico.see("end")
-        entrada_despesa.delete(0, ctk.END)
-        atualizar_status()
+        try:
+            valor = float(valor)
+            lista_despesas.append(valor)
+            historico.insert("end", f"[DESPESA] R$ {valor:.2f}\n")
+            historico.see("end")
+            entrada_despesa.delete(0, ctk.END)
+            atualizar_status()
+            log.sucesso(f"Despesa adicionada: R$ {valor:.2f}")
+        except:
+            log.erro("Valor inválido para despesa!")
+    else:
+        log.aviso("Digite um valor para a despesa!")
 
 def limpar_frame_app():
     for widget in frame_app.grid_slaves():
@@ -124,6 +234,8 @@ def mostrar_grafico():
     canvas.draw()
     canvas.get_tk_widget().grid(row=0, column=0, padx=20, pady=20)
 
+    log.info("Gráfico exibido com sucesso!")
+
 # ------------------------
 # ELEMENTOS DO TOPO
 # ------------------------
@@ -141,11 +253,9 @@ titulo.pack(pady=20)
 # ------------------------
 # ELEMENTOS DO FRAME APP
 # ------------------------
-# Entrada de Receita e Despesa no Frame App
 entrada_receita = ctk.CTkEntry(frame_app, placeholder_text="Digite sua receita", width=300)
 entrada_despesa = ctk.CTkEntry(frame_app, placeholder_text="Digite sua despesa", width=300)
 
-# Botões de Salvar 
 botao_salvar_receita = ctk.CTkButton(
     frame_app,
     text="Salvar Receita",
@@ -164,14 +274,12 @@ botao_salvar_despesa = ctk.CTkButton(
     fg_color=Verde
 )
 
-# Caixa de histórico
 historico = ctk.CTkTextbox(frame_app, width=400, height=320)
 historico.grid(row=0, column=1, padx=20, pady=20)
 
 # ------------------------
 # MENU LATERAL
 # ------------------------
-# Botão de Receita
 botao_receita = ctk.CTkButton(
     frame_menu, 
     text="Receitas",
@@ -180,7 +288,6 @@ botao_receita = ctk.CTkButton(
 )
 botao_receita.grid(row=0, column=0, padx=20, pady=20)
 
-# Botão de Despesa
 botao_despesa = ctk.CTkButton(
     frame_menu, 
     text="Despesas",
@@ -189,7 +296,6 @@ botao_despesa = ctk.CTkButton(
 )
 botao_despesa.grid(row=1, column=0, padx=20, pady=20)
 
-# Botão de Gráfico
 botao_grafico = ctk.CTkButton(
     frame_menu, 
     text="Gráfico",
@@ -199,13 +305,7 @@ botao_grafico = ctk.CTkButton(
 botao_grafico.grid(row=2, column=0, padx=20, pady=20)
 
 # ------------------------
-# LOG
-# ------------------------
-log_label = ctk.CTkLabel(frame_log, text="Talvez as ações do usuário apareçam aqui...")
-log_label.pack(pady=20)
-
-# ------------------------
-# LOOP
+# LOOP PRINCIPAL
 # ------------------------
 horario()
 janela.mainloop()
