@@ -1,0 +1,11 @@
+ok_valor, resultado_valor = validar_valor(valor_input)
+if not ok_valor:
+    log(resultado_valor)  # mostra erro para usuário
+    return
+
+ok_desc, resultado_desc = validar_descricao(desc_input)
+if not ok_desc:
+    log(resultado_desc)
+    return
+
+# prosseguir com resultado_valor e resultado_desc
